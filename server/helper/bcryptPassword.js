@@ -12,4 +12,14 @@ async function hashPassword(password) {
   }
 }
 
-module.exports = { hashPassword };
+async function comparePassword(password, hashedPassword) {
+  try {
+    const isMatch = await bcrypt.compare(password, hashedPassword);
+    return isMatch;
+  } catch (err) {
+    console.error("Error checking password:", err);
+    throw err; // propagate error to the caller
+  }
+}
+
+module.exports = { comparePassword, hashPassword };

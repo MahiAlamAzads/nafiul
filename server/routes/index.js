@@ -2,10 +2,15 @@ const express = require('express');
 const router = express.Router();
 
 const authRouter = require("./auth/index")
+const uploadRouter = require("./upload/index")
 
 router.use("/auth", authRouter)
-/* GET home page. */
-router.get('/', function(req, res, next) {
+router.use("/upload", uploadRouter)
+
+
+/* GET indez page. */
+router.get('/house', function(req, res, next) {
+  const {} = req.body
   res.send("working")
 });
 

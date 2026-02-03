@@ -1,25 +1,19 @@
 // this /auth/______
 const express = require('express');
-const { hashPassword } = require('../../helper/hashPassword');
+const { comparePassword } = require('../../helper/bcryptPassword');
+const User = require('../../model/Users.model');
+const { registerController, loginController } = require('../../controllers/auth.controller');
+const { generateToken } = require('../../helper/jwt');
+
 const router = express.Router();
 
 router.get('/', (req, res) => {
   res.send("auth root");
 });
 
-router.get('/login', (req, res) => {
-  res.send("login page");
-});
+router.post('/login', loginController);
 
-router.post('/register', async(req, res) => {
-  const {number, email, password} = req.body;
-  if(!number || !email || !password) res.status(400).json({
-    error: "All fields required"
-  })
-  //passwor hash fucntion from other module function
-  const hashedPassword = await hashPassword(password);
+router.post("/register", registerController);
 
-  res.send({hashedPassword: hashedPassword});
-});
 
 module.exports = router;
