@@ -9,9 +9,8 @@ router.use("/upload", uploadRouter)
 
 
 /* GET indez page. */
-router.get('/house', function(req, res, next) {
-  const {} = req.body
-  res.send("working")
+router.get('/', function(req, res, next) {
+  res.send("index");
 });
 
 router.get('/demo-house', function(req, res, next){
