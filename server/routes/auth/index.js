@@ -1,9 +1,6 @@
-// this /auth/______
+// this route:  /auth/______
 const express = require('express');
-const { comparePassword } = require('../../helper/bcryptPassword');
-const User = require('../../model/Users.model');
 const { registerController, loginController } = require('../../controllers/auth.controller');
-const { generateToken } = require('../../helper/jwt');
 
 const router = express.Router();
 

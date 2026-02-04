@@ -5,7 +5,7 @@ const authRouter = require("./auth/index")
 const uploadRouter = require("./upload/index")
 
 router.use("/auth", authRouter)
-router.use("/upload", uploadRouter)
+router.use("/house", uploadRouter)
 
 
 /* GET indez page. */
