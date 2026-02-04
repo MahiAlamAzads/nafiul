@@ -58,7 +58,7 @@ const houseSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["available", "booked", "unavailable"],
+      enum: ["available", "unavailable"],
       default: "available"
     },
     contactNumber: {
