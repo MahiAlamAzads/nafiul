@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 const authRouter = require("./auth/index")
-const uploadRouter = require("./upload/index")
+const houseRouter = require("./house/index")
 
 router.use("/auth", authRouter)
-router.use("/house", uploadRouter)
+router.use("/house", houseRouter)
 
 
 /* GET indez page. */

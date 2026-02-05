@@ -6,4 +6,5 @@ for authentication api:
 for house crud:
     /house/upload - post
     /house/delete - delete
+    /house/update - put
 </pre>

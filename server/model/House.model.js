@@ -7,6 +7,12 @@ const houseSchema = new mongoose.Schema(
       ref: "User",
       required: true
     },
+    ownerName: {
+      type: String,
+      required: true,
+      minlength: 1,
+      maxlength: 50
+    },
     title: {
       type: String,
       required: true,
@@ -67,7 +73,10 @@ const houseSchema = new mongoose.Schema(
       match: /^\+?[0-9]{7,15}$/
     }
   },
-  { timestamps: true } // adds createdAt and updatedAt automatically
+  { 
+    timestamps: true,       // adds createdAt and updatedAt automatically
+    strict: "throw"         // 👈 throws error if unknown fields are used
+  }
 );
 
 module.exports = mongoose.model("Houselist", houseSchema);
