@@ -6,15 +6,9 @@ const houseRouter = require("./house/index")
 
 router.use("/auth", authRouter)
 router.use("/house", houseRouter)
-
+router.use("/public", require("./public/index"))
 
 /* GET indez page. */
-router.get('/', function(req, res, next) {
-  res.send("index");
-});
 
-router.get('/demo-house', function(req, res, next){
-  res.send("demo house")
-})
 
 module.exports = router;
