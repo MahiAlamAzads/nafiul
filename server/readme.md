@@ -19,3 +19,23 @@ for authentication:
 }
 </pre>
 
+<!-- 
+🔧 Bonus: Auto-cleanup with a Cron Job
+If you want to enforce expiry without waiting for a save/update, you can run a daily cron job that checks all houses:
+
+const cron = require("node-cron");
+const Houselist = require("./models/Houselist");
+
+cron.schedule("0 0 * * *", async () => { // runs every midnight
+  const now = new Date();
+  await Houselist.updateMany(
+    { subscriptionExpiresAt: { $lt: now } },
+    { $set: { visibility: "private", isPaid: false } }
+  );
+});
+
+
+
+👉 This way, your system is subscription-aware: listings automatically expire, users can’t cheat by setting public without paying, and you can even batch‑clean expired subscriptions with a cron job.
+
+ -->

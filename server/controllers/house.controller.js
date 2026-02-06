@@ -25,7 +25,6 @@ async function uploadHouseController(req, res, next) {
     // i should not forget to save
     await house.save();
 
-
     res.send({
         house: house,
         message: "House uploaded successfully"

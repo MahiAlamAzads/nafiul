@@ -11,7 +11,7 @@ const { limitQueryChecker } = require('../../helper/numberValidator');
 router.get('/search', async (req, res, next) => {
   try {
     console.log(req.query);
-    res.send("seacrh route working: " , req.query);
+    res.send("seacrh route working: ", req.query);
   } catch (error) {
     res.status(500).json({ error: "Server error", details: error.message });
   }
@@ -19,41 +19,66 @@ router.get('/search', async (req, res, next) => {
 
 // this is test route
 router.get('/house-feed', getHouseFeedController);
-router.get('/all-houses', getAllHouseController);
+router.get('/all-houses', getAllHouseController); //search method included
 
 
 async function getAllHouseController(req, res, next) {
   try {
     const query_params = req.query;
     const query = {};
-    console.log(query_params);
-    // validation of limit
-    const limitQuery = Number(query_params.limit);
-    query.limit = limitQueryChecker(limitQuery) ? limitQuery : 20;
-    console.log(typeof query.limit);
-    res.status(200).json(query.limit);
 
-    // validation of offset
-    const offsetQuery = Number(query_params.offset);
-    query.offset = limitQueryChecker(offsetQuery) ? offsetQuery : 0;
-    console.log(typeof query.offset);
-    res.status(200).json(query.offset);
+    // ✅ Advanced search filters
+    if (query_params.ownerName) query.ownerName = { $regex: query_params.ownerName, $options: "i" };
+    if (query_params.title) query.title = { $regex: query_params.title, $options: "i" };
+    if (query_params.type) query.type = query_params.type;
+    if (query_params.houseType) query.houseType = query_params.houseType;
+    if (query_params.forWhom) query.forWhom = query_params.forWhom;
+    if (query_params.location) query.location = { $regex: query_params.location, $options: "i" };
+    if (query_params.status) query.status = query_params.status;
+    if (query_params.contactNumber) query.contactNumber = query_params.contactNumber;
 
+    // ✅ Pagination
+    const limit = Number(query_params.limit) > 0 ? Number(query_params.limit) : 10;
+    const page = Number(query_params.page) > 0 ? Number(query_params.page) : 1;
+    const offset = (page - 1) * limit;
 
-    // if (req.body.title) query.title = req.body.title;
-    // if (req.body.type) query.type = req.body.type;  //advanced
-    // if (req.body.houseType) query.houseType = req.body.houseType; //advanced
-    // if (req.body.forWhom) query.forWhom = req.body.forWhom; //advanced
-    // if (req.body.location) query.location = req.body.location;
-    // if (req.body.status) query.status = req.body.status;
-    // if (req.body.contactNumber) query.contactNumber = req.body.contactNumber; //advanced
+    // ✅ Fetch data + count in one go (aggregation)
+    const result = await Houselist.aggregate([
+      {
+         $match: query,
+        visiblity: 'public'
+       },
+      {
+        $facet: {
+          data: [
+            { $sort: { createdAt: -1 } },
+            { $skip: offset },
+            { $limit: limit },
+            { $project: { title: 1, location: 1, type: 1, houseType: 1, forWhom: 1, updatedAt: 1, ownerName: 1 } } // projection
+          ],
+          totalCount: [{ $count: "count" }]
+        }
+      }
+    ]);
 
-    // const houses = await Houselist.find()
-    //   .sort({ createdAt: -1 }) // optional: newest first
-    //   .limit(10);
-    // res.status(200).json(houses);
+    const houses = result[0].data;
+    const totalCount = result[0].totalCount[0]?.count || 0;
+
+    res.status(200).json({
+      message: "Houses fetched successfully",
+      query,
+      limit,
+      page,
+      offset,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      data: houses
+    });
   } catch (error) {
-    res.status(500).json({ error: "Server error", details: error.message });
+    res.status(500).json({
+      error: "Server error",
+      details: error.message
+    });
   }
 }
 
@@ -62,5 +87,12 @@ async function getAllHouseController(req, res, next) {
 
 module.exports = router;
 
+
+/**
+ * 1. for pagination, we have to know how many records we have, how many we want to show per page, and how many pages we have.
+ * 2. so, every, fetching of a page, we have to calculate the offset.
+ * 3. for limit, we have to know how many records we want to show per page.
+ * 4. so, every, fetching of a page, we have to calculate the limit.
+ */
 
 
