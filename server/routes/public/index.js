@@ -45,16 +45,28 @@ async function getAllHouseController(req, res, next) {
     // ✅ Fetch data + count in one go (aggregation)
     const result = await Houselist.aggregate([
       {
-         $match: query,
-        visiblity: 'public'
-       },
+        $match: {
+          ...query,              // spread your dynamic filters
+          visibility: "public"   // ✅ correct spelling, inside the same object
+        }
+      },
       {
         $facet: {
           data: [
             { $sort: { createdAt: -1 } },
             { $skip: offset },
             { $limit: limit },
-            { $project: { title: 1, location: 1, type: 1, houseType: 1, forWhom: 1, updatedAt: 1, ownerName: 1 } } // projection
+            {
+              $project: {
+                title: 1,
+                location: 1,
+                type: 1,
+                houseType: 1,
+                forWhom: 1,
+                updatedAt: 1,
+                ownerName: 1
+              }
+            }
           ],
           totalCount: [{ $count: "count" }]
         }
