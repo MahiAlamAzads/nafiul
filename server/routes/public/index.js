@@ -26,7 +26,7 @@ async function getAllHouseController(req, res, next) {
   try {
     const query_params = req.query;
     const query = {};
-
+    // all possible query: {ownerName, title, type, houseType, forWhom, location, status, contactNumber}
     // ✅ Advanced search filters
     if (query_params.ownerName) query.ownerName = { $regex: query_params.ownerName, $options: "i" };
     if (query_params.title) query.title = { $regex: query_params.title, $options: "i" };
